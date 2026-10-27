@@ -1,0 +1,105 @@
+Lunes 26 de octubre del 2026 -> 26/10/26
+
+Carro 8, My_DOMAIN_ID: 20
+
+1)
+
+root@raspberrypi:/# ros2 node list
+/YB_Car_Node
+/odom_corrector
+
+2)
+
+root@raspberrypi:/# ros2 topic list
+/battery
+/beep
+/cmd_vel
+/imu
+/odom
+/odom_raw
+/odom_reset
+/parameter_events
+/rosout
+/scan
+/servo_s1
+/servo_s2
+/tf
+
+3)
+
+root@raspberrypi:/# ros2 topic hz /odom_raw
+average rate: 10.754
+	min: 0.079s max: 0.134s std dev: 0.01881s window: 12
+average rate: 11.112
+	min: 0.078s max: 0.140s std dev: 0.01785s window: 24
+average rate: 10.955
+	min: 0.078s max: 0.141s std dev: 0.01885s window: 35
+average rate: 11.115
+	min: 0.067s max: 0.147s std dev: 0.01909s window: 47
+average rate: 11.032
+	min: 0.067s max: 0.147s std dev: 0.01946s window: 59
+average rate: 11.097
+	min: 0.067s max: 0.147s std dev: 0.01881s window: 71
+average rate: 11.040
+	min: 0.067s max: 0.147s std dev: 0.01904s window: 83
+average rate: 11.102
+	min: 0.067s max: 0.147s std dev: 0.01879s window: 95
+average rate: 11.060
+	min: 0.067s max: 0.147s std dev: 0.01911s window: 107
+average rate: 11.104
+	min: 0.067s max: 0.147s std dev: 0.01886s window: 119
+average rate: 11.077
+	min: 0.067s max: 0.147s std dev: 0.01888s window: 131
+^Croot@raspberrypi:/# ros2 topic hz /odom    
+average rate: 10.767
+	min: 0.077s max: 0.136s std dev: 0.01970s window: 12
+average rate: 11.151
+	min: 0.071s max: 0.136s std dev: 0.01820s window: 24
+average rate: 10.977
+	min: 0.071s max: 0.136s std dev: 0.01868s window: 35
+average rate: 11.115
+	min: 0.071s max: 0.139s std dev: 0.01826s window: 47
+average rate: 11.030
+	min: 0.071s max: 0.140s std dev: 0.01875s window: 59
+average rate: 11.120
+	min: 0.071s max: 0.140s std dev: 0.01829s window: 71
+average rate: 11.056
+	min: 0.071s max: 0.140s std dev: 0.01842s window: 83
+average rate: 11.124
+	min: 0.071s max: 0.140s std dev: 0.01823s window: 95
+average rate: 11.067
+	min: 0.071s max: 0.141s std dev: 0.01870s window: 107
+average rate: 11.110
+	min: 0.068s max: 0.141s std dev: 0.01844s window: 119
+average rate: 11.072
+	min: 0.068s max: 0.146s std dev: 0.01889s window: 131
+^Croot@raspberrypi:/# ros2 topic hz /imu 
+average rate: 22.965
+	min: 0.007s max: 0.076s std dev: 0.02901s window: 24
+average rate: 23.098
+	min: 0.007s max: 0.076s std dev: 0.02713s window: 48
+average rate: 23.433
+	min: 0.007s max: 0.076s std dev: 0.02760s window: 73
+average rate: 23.802
+	min: 0.007s max: 0.076s std dev: 0.02675s window: 99
+average rate: 24.055
+	min: 0.007s max: 0.076s std dev: 0.02690s window: 125
+average rate: 23.930
+	min: 0.007s max: 0.078s std dev: 0.02703s window: 149
+average rate: 24.043
+	min: 0.007s max: 0.078s std dev: 0.02673s window: 175
+average rate: 23.988
+	min: 0.007s max: 0.078s std dev: 0.02691s window: 199
+average rate: 23.830
+	min: 0.007s max: 0.078s std dev: 0.02685s window: 223
+average rate: 23.648
+	min: 0.007s max: 0.080s std dev: 0.02701s window: 246
+average rate: 23.439
+	min: 0.007s max: 0.080s std dev: 0.02706s window: 268
+average rate: 23.500
+	min: 0.007s max: 0.080s std dev: 0.02726s window: 293
+
+4)
+[odom_corrector-1] [INFO] [1784102715.550730527] [odom_corrector]: /odom_raw -> 
+/odom | r=0.0325 (r0=0.0325) b_eff=0.2400 (b0=0.2400) k_lin=1.0000 k_ang=1.0000
+
