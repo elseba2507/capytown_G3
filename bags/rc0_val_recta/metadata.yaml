@@ -2,10 +2,10 @@ rosbag2_bagfile_information:
   version: 5
   storage_identifier: sqlite3
   duration:
-    nanoseconds: 16557681397
+    nanoseconds: 16173432417
   starting_time:
-    nanoseconds_since_epoch: 1784138748491335101
-  message_count: 639
+    nanoseconds_since_epoch: 1784183518448906812
+  message_count: 653
   topics_with_message_count:
     - topic_metadata:
         name: /cmd_vel
@@ -14,23 +14,23 @@ rosbag2_bagfile_information:
         offered_qos_profiles: "- history: 3\n  depth: 0\n  reliability: 1\n  durability: 1\n  deadline:\n    sec: 9223372036\n    nsec: 854775807\n  lifespan:\n    sec: 9223372036\n    nsec: 854775807\n  liveliness: 1\n  liveliness_lease_duration:\n    sec: 9223372036\n    nsec: 854775807\n  avoid_ros_namespace_conventions: false"
       message_count: 110
     - topic_metadata:
-        name: /odom_raw
-        type: nav_msgs/msg/Odometry
-        serialization_format: cdr
-        offered_qos_profiles: "- history: 3\n  depth: 0\n  reliability: 1\n  durability: 2\n  deadline:\n    sec: 9223372036\n    nsec: 854775807\n  lifespan:\n    sec: 9223372036\n    nsec: 854775807\n  liveliness: 1\n  liveliness_lease_duration:\n    sec: 9223372036\n    nsec: 854775807\n  avoid_ros_namespace_conventions: false"
-      message_count: 159
-    - topic_metadata:
         name: /odom
         type: nav_msgs/msg/Odometry
         serialization_format: cdr
         offered_qos_profiles: "- history: 3\n  depth: 0\n  reliability: 1\n  durability: 2\n  deadline:\n    sec: 9223372036\n    nsec: 854775807\n  lifespan:\n    sec: 9223372036\n    nsec: 854775807\n  liveliness: 1\n  liveliness_lease_duration:\n    sec: 9223372036\n    nsec: 854775807\n  avoid_ros_namespace_conventions: false"
-      message_count: 185
+      message_count: 181
+    - topic_metadata:
+        name: /odom_raw
+        type: nav_msgs/msg/Odometry
+        serialization_format: cdr
+        offered_qos_profiles: "- history: 3\n  depth: 0\n  reliability: 1\n  durability: 2\n  deadline:\n    sec: 9223372036\n    nsec: 854775807\n  lifespan:\n    sec: 9223372036\n    nsec: 854775807\n  liveliness: 1\n  liveliness_lease_duration:\n    sec: 9223372036\n    nsec: 854775807\n  avoid_ros_namespace_conventions: false"
+      message_count: 181
     - topic_metadata:
         name: /tf
         type: tf2_msgs/msg/TFMessage
         serialization_format: cdr
         offered_qos_profiles: "- history: 3\n  depth: 0\n  reliability: 1\n  durability: 2\n  deadline:\n    sec: 9223372036\n    nsec: 854775807\n  lifespan:\n    sec: 9223372036\n    nsec: 854775807\n  liveliness: 1\n  liveliness_lease_duration:\n    sec: 9223372036\n    nsec: 854775807\n  avoid_ros_namespace_conventions: false"
-      message_count: 185
+      message_count: 181
   compression_format: ""
   compression_mode: ""
   relative_file_paths:
@@ -38,7 +38,7 @@ rosbag2_bagfile_information:
   files:
     - path: rc0_val_recta_0.db3
       starting_time:
-        nanoseconds_since_epoch: 1784138748491335101
+        nanoseconds_since_epoch: 1784183518448906812
       duration:
-        nanoseconds: 16557681397
-      message_count: 639
+        nanoseconds: 16173432417
+      message_count: 653
