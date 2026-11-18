@@ -1,0 +1,47 @@
+ROS_DOMAIN_ID=8 · bringup capytown_esan (r=0.0311, b_eff=0.2259)
+WARNING: topic [/odom] does not appear to be published yet
+average rate: 10.773
+	min: 0.075s max: 0.140s std dev: 0.02040s window: 13
+average rate: 11.157
+	min: 0.073s max: 0.140s std dev: 0.01832s window: 25
+average rate: 11.002
+	min: 0.072s max: 0.140s std dev: 0.01853s window: 37
+average rate: 11.126
+	min: 0.072s max: 0.140s std dev: 0.01788s window: 49
+Type: nav_msgs/msg/Odometry
+
+Publisher count: 1
+
+Node name: odom_corrector
+Node namespace: /
+Topic type: nav_msgs/msg/Odometry
+Endpoint type: PUBLISHER
+GID: 01.0f.ef.6f.68.02.7b.4e.01.00.00.00.00.00.11.03.00.00.00.00.00.00.00.00
+QoS profile:
+  Reliability: RELIABLE
+  History (Depth): UNKNOWN
+  Durability: VOLATILE
+  Lifespan: Infinite
+  Deadline: Infinite
+  Liveliness: AUTOMATIC
+  Liveliness lease duration: Infinite
+
+Subscription count: 0
+
+/YB_Car_Node
+/odom_corrector
+13-nov giro90 run2 (exp2_real_b): yaw_odom=90.7 real=+6 deg
+13-nov calibracion 4x90 (exp2_cal_1..4): FIN=88.8,90.4,90.2,90.6 suma=360.0 real=370 -> b_eff 0.2259 a 0.2198
+17-nov recta ki=0 kp=3 kd=4 run2=17 cm (desvio +7) run3=24 (+14) run4=30.5 (+20.5) a la derecha de la linea
+17-nov diagnostico recta line_offset=0: 5.5 cm de la linea -> la curva inicial aporta la mayor parte del desvio. Re-sintonia 3: kp 3 a 2
+17-nov recta kp=2 ki=0 kd=4 (re-sintonia 3): run5=8.5 (desvio -1.5) run6=23.5 (+13.5) run7=15 (+5) cm a la derecha
+17-nov recta kp=2 alineacion precisa: run8=22 (+12) run9=13 (+3) run10=17.5 (+7.5). Total kp=2: prom +6.6 cm, 3 de 6 dentro de 5 cm. Sesgo sistematico a la derecha (offset0 = 5.5 cm) que /odom no ve
+17-nov 3A run4 (exp3a_real_4.csv, bag rc1_real_3a_4): cierre real=15 cm
+17-nov 3B run1 (kp=2 ki=0 kd=4 kp_yaw=5 kd_yaw=0.4): cierre real=75 cm
+17-nov 3A run2 y run3: errores de ejecucion, sin medicion (bags rc1_real_3a_2, _3 guardados)
+17-nov 3B run2: cierre REAL=44 cm (zigzag en lados, se paso en esquinas 2 y 3)
+17-nov 3B run3: FIN odom cierre=__ cm yaw=__ | REAL cierre=__ cm, angulo final=__ grados a la ___
+17-nov 3B run3: FIN odom cierre=1.4 cm yaw=358.4 t=127.9 s giros odom=90.9,88.1,91.2 | REAL cierre=54.5 cm
+17-nov RESUMEN E7: 3A=15 cm | 3B=75, 44, 54.5 cm (prom 57.8) vs odom 2.2, 3.2, 1.4 cm. No cumple <=25 cm: derrape y curva a la derecha que /odom no ve
+13-nov giro90 x6 max_angular=0.5 (re-sintonia 1): real=+4,+2,+7,0,0,+4 deg prom=+2.8
+13-nov giro90 x3 b_eff=0.2132 max_angular=0.5 real=0,0,0 deg -> E5 OK. Guardado en wheel_params_rc1.yaml
