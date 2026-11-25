@@ -36,6 +36,6 @@ for rg, ve in ((0.0, 1.0), (0.05, 1.0), (0.05, 0.6), (0.05, 0.0)):
     c, real, rl = corre("cuadrado", vueltas=1, ruido_giro=rg, ve=ve, semilla=sem)
     errs = []
     for (k, xc, yc, thc), (xr, yr, thr) in zip(c.llegadas, rl):
-        xd, yd = [(0,0),(2,0),(2,2),(0,2)][k]
+        xd, yd = c.docks[k]
         errs.append(math.hypot(xr - xd, yr - yd) * 100)
     print(f"derrape {rg} ve {ve} sem {sem}: error real en cada dock (cm) {np.round(errs,1)}  t {c.t:.0f}s estado {c.estado}")

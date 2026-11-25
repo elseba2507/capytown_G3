@@ -17,11 +17,12 @@ Uso (desde la carpeta final/ del robot):
     python3 ejecutor.py --ros-args -p modo:=giro  -p log_csv:=ej_giro1.csv
     python3 ejecutor.py --ros-args -p modo:=recta -p log_csv:=ej_recta1.csv
     python3 ejecutor.py --ros-args -p modo:=cuadrado -p vueltas:=1 -p log_csv:=ej_cuad1.csv
+    (lado del cuadrado o largo de la recta: -p lado:=1.5; por defecto 2.0 m como en la carrera)
 """
 import csv
 import math
 
-DOCKS = [(0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0)]   # D1..D4 respecto a D1 (m)
+ESQUINAS = [(0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)]  # D1..D4 en unidades de lado, respecto a D1
 
 
 def norm(a):
@@ -35,16 +36,17 @@ def clamp(v, lo, hi):
 class Core:
     """Maquina de estados sin ROS: SESGO -> (GIRA -> AVANZA -> PARADA)* -> FIN."""
 
-    def __init__(self, modo="cuadrado", vueltas=1, v=0.10, w_max=0.5, cd=1.005, ca=1.03,
+    def __init__(self, modo="cuadrado", vueltas=1, lado=2.0, v=0.10, w_max=0.5, cd=1.005, ca=1.03,
                  freno=0.027, kp_giro=3.0, w_min=0.12, tol_giro=math.radians(1.0),
                  kp_rumbo=2.0, t_parada=2.0, t_sesgo=1.0):
         self.modo, self.v, self.w_max, self.cd, self.ca = modo, v, w_max, cd, ca
+        self.docks = [(lado * a, lado * b) for a, b in ESQUINAS]
         self.freno, self.kp_giro, self.w_min, self.tol = freno, kp_giro, w_min, tol_giro
         self.kp_rumbo, self.t_parada, self.t_sesgo = kp_rumbo, t_parada, t_sesgo
         if modo == "giro":
             self.plan = [("GIRA", math.pi / 2)]
         elif modo == "recta":
-            self.plan = [("AVANZA", 2.0)]
+            self.plan = [("AVANZA", lado)]
         else:                                   # cuadrado: dock k -> dock k+1, parando en cada uno
             self.plan = [("IR", (k + 1) % 4) for k in range(4 * vueltas)]
         self.x = self.y = self.th = 0.0
@@ -78,7 +80,7 @@ class Core:
         tipo, arg = self.plan.pop(0)
         if tipo == "IR":                        # planificador de tramo
             self.dock = arg
-            xd, yd = DOCKS[arg]
+            xd, yd = self.docks[arg]
             phi = norm(math.atan2(yd - self.y, xd - self.x) - self.th)
             L = math.hypot(xd - self.x, yd - self.y)
             self.plan[:0] = [("GIRA", phi), ("AVANZA", L), ("PARADA", arg)]
@@ -134,11 +136,12 @@ def main(args=None):
             super().__init__("ejecutor")
             d = Core()
             self.declare_parameters("", [
-                ("modo", "cuadrado"), ("vueltas", 1), ("linear_speed", d.v), ("max_angular", d.w_max),
+                ("modo", "cuadrado"), ("vueltas", 1), ("lado", 2.0), ("linear_speed", d.v), ("max_angular", d.w_max),
                 ("cd", d.cd), ("ca", d.ca), ("freno", d.freno), ("t_parada", d.t_parada),
                 ("log_csv", "")])
             g = lambda n: self.get_parameter(n).value
-            self.c = Core(modo=g("modo"), vueltas=int(g("vueltas")), v=float(g("linear_speed")),
+            self.c = Core(modo=g("modo"), vueltas=int(g("vueltas")), lado=float(g("lado")),
+                          v=float(g("linear_speed")),
                           w_max=float(g("max_angular")), cd=float(g("cd")), ca=float(g("ca")),
                           freno=float(g("freno")), t_parada=float(g("t_parada")))
             self.s = 0.0
