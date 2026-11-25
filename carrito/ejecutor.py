@@ -63,7 +63,7 @@ class Core:
             self.th += self.ca * (wz - self.sesgo) * dt
 
     def odom(self, s):
-        """s = camino recorrido segun /odom (m, siempre creciente hacia adelante)."""
+        """s = avance acumulado segun /odom (m, con signo: + hacia adelante)."""
         if self.s_prev is not None and self.estado != "SESGO":
             ds = self.cd * (s - self.s_prev)
             self.x += ds * math.cos(self.th)
@@ -164,9 +164,11 @@ def main(args=None):
             return self.get_clock().now().nanoseconds * 1e-9
 
         def on_odom(self, m):
-            p = m.pose.pose.position
-            if self.xy is not None:
-                self.s += math.hypot(p.x - self.xy[0], p.y - self.xy[1])
+            p, q = m.pose.pose.position, m.pose.pose.orientation
+            yaw_o = math.atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y * q.y + q.z * q.z))
+            if self.xy is not None:            # avance con signo: el vaiven al girar se cancela
+                dx, dy = p.x - self.xy[0], p.y - self.xy[1]
+                self.s += dx * math.cos(yaw_o) + dy * math.sin(yaw_o)
             self.xy = (p.x, p.y)
             self.c.odom(self.s)
             self.rx["odom"] = self.now()
@@ -199,7 +201,7 @@ def main(args=None):
                 self.reportado += 1
             if self.c.estado == "FIN" and not self.fin_dicho:
                 self.get_logger().info(f"FIN. giro acumulado (giroscopio) = {math.degrees(self.c.th):.1f} deg, "
-                                       f"camino /odom = {self.s * 100:.1f} cm, t = {self.c.t:.1f} s")
+                                       f"avance /odom = {self.s * 100:.1f} cm, t = {self.c.t:.1f} s")
                 self.fin_dicho = True
 
     rclpy.init(args=args)
