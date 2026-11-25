@@ -18,6 +18,7 @@ Uso (desde la carpeta final/ del robot):
     python3 ejecutor.py --ros-args -p modo:=recta -p log_csv:=ej_recta1.csv
     python3 ejecutor.py --ros-args -p modo:=cuadrado -p vueltas:=1 -p log_csv:=ej_cuad1.csv
     (lado del cuadrado o largo de la recta: -p lado:=1.5; por defecto 2.0 m como en la carrera)
+    (-p reset_manual:=true -p t_parada:=20.0: en cada parada se pone el robot sobre la cruz, como un pit)
 """
 import csv
 import math
@@ -38,11 +39,12 @@ class Core:
 
     def __init__(self, modo="cuadrado", vueltas=1, lado=2.0, v=0.10, w_max=0.5, cd=1.005, ca=1.03,
                  freno=0.027, kp_giro=3.0, w_min=0.12, tol_giro=math.radians(1.0),
-                 kp_rumbo=2.0, t_parada=2.0, t_sesgo=1.0):
+                 kp_rumbo=2.0, t_parada=2.0, t_sesgo=1.0, reset_manual=False):
         self.modo, self.v, self.w_max, self.cd, self.ca = modo, v, w_max, cd, ca
         self.docks = [(lado * a, lado * b) for a, b in ESQUINAS]
         self.freno, self.kp_giro, self.w_min, self.tol = freno, kp_giro, w_min, tol_giro
         self.kp_rumbo, self.t_parada, self.t_sesgo = kp_rumbo, t_parada, t_sesgo
+        self.reset_manual = reset_manual        # en cada parada una persona pone el robot sobre la cruz
         if modo == "giro":
             self.plan = [("GIRA", math.pi / 2)]
         elif modo == "recta":
@@ -120,6 +122,9 @@ class Core:
         elif self.estado == "PARADA":
             if self.t_est >= self.t_parada:       # ya quieto: esta es la llegada creida
                 self.llegadas.append((self.dock, self.x, self.y, self.th))
+                if self.reset_manual:               # como un reset de pose perfecto con el tag
+                    self.x, self.y = self.docks[self.dock]
+                    self.th = round(self.th / (math.pi / 2)) * (math.pi / 2)
                 self._siguiente()
         return v, w
 
@@ -138,12 +143,14 @@ def main(args=None):
             self.declare_parameters("", [
                 ("modo", "cuadrado"), ("vueltas", 1), ("lado", 2.0), ("linear_speed", d.v), ("max_angular", d.w_max),
                 ("cd", d.cd), ("ca", d.ca), ("freno", d.freno), ("t_parada", d.t_parada),
+                ("reset_manual", False),
                 ("log_csv", "")])
             g = lambda n: self.get_parameter(n).value
             self.c = Core(modo=g("modo"), vueltas=int(g("vueltas")), lado=float(g("lado")),
                           v=float(g("linear_speed")),
                           w_max=float(g("max_angular")), cd=float(g("cd")), ca=float(g("ca")),
-                          freno=float(g("freno")), t_parada=float(g("t_parada")))
+                          freno=float(g("freno")), t_parada=float(g("t_parada")),
+                          reset_manual=bool(g("reset_manual")))
             self.s = 0.0
             self.xy = None
             self.t_imu = None
