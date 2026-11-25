@@ -39,7 +39,7 @@ class Core:
 
     def __init__(self, modo="cuadrado", vueltas=1, lado=2.0, v=0.10, w_max=0.5, cd=1.005, ca=1.03,
                  freno=0.027, kp_giro=3.0, w_min=0.12, tol_giro=math.radians(1.0),
-                 kp_rumbo=2.0, t_parada=2.0, t_sesgo=1.0, reset_manual=False):
+                 kp_rumbo=2.0, t_parada=2.0, t_sesgo=2.0, reset_manual=False):
         self.modo, self.v, self.w_max, self.cd, self.ca = modo, v, w_max, cd, ca
         self.docks = [(lado * a, lado * b) for a, b in ESQUINAS]
         self.freno, self.kp_giro, self.w_min, self.tol = freno, kp_giro, w_min, tol_giro
@@ -54,7 +54,9 @@ class Core:
         self.x = self.y = self.th = 0.0
         self.estado, self.t, self.t_est = "SESGO", 0.0, 0.0
         self.sesgo_n, self.sesgo_sum, self.sesgo = 0, 0.0, 0.0
-        self.s_prev = None
+        self.s_prev = None                      # avance interno (m), sin los saltos de /odom
+        self.s_raw = None                       # ultimo valor crudo de /odom
+        self.par_n, self.par_sum = 0, 0.0       # muestras quietas en la parada para re-medir el sesgo
         self.llegadas = []                      # (dock, x, y, th) creidos al parar
         self.dock = 0
 
@@ -63,16 +65,27 @@ class Core:
         if self.estado == "SESGO":
             self.sesgo_n += 1
             self.sesgo_sum += wz
-        else:
-            self.th += self.ca * (wz - self.sesgo) * dt
+            return
+        self.th += self.ca * (wz - self.sesgo) * dt
+        # en la parada, con el robot quieto (sin tocarlo), el sesgo se vuelve a medir: deriva con la temperatura
+        if self.estado == "PARADA" and self.t_est > 0.5 and abs(wz - self.sesgo) < 0.01:
+            self.par_n += 1
+            self.par_sum += wz
 
     def odom(self, s):
         """s = avance acumulado segun /odom (m, con signo: + hacia adelante)."""
-        if self.s_prev is not None and self.estado != "SESGO":
-            ds = self.cd * (s - self.s_prev)
+        if self.s_raw is None:
+            self.s_raw, self.s_prev = s, 0.0
+            return
+        d = s - self.s_raw
+        self.s_raw = s
+        if abs(d) > 0.3:                        # salto de /odom (p. ej. el ESP32 se reinicio): se ignora
+            return
+        self.s_prev += d
+        if self.estado != "SESGO":
+            ds = self.cd * d
             self.x += ds * math.cos(self.th)
             self.y += ds * math.sin(self.th)
-        self.s_prev = s
 
     # ---- control --------------------------------------------------------------
     def _siguiente(self):
@@ -90,6 +103,8 @@ class Core:
         self.estado, self.t_est = tipo, 0.0
         if tipo == "GIRA":
             self.th0, self.obj, self.t_tol = self.th, arg, 0.0
+        elif tipo == "PARADA":
+            self.par_n, self.par_sum = 0, 0.0
         elif tipo == "AVANZA":
             self.s0, self.rumbo = self.s_prev, self.th
             self.obj = max(0.0, arg - self.freno)
@@ -122,6 +137,8 @@ class Core:
         elif self.estado == "PARADA":
             if self.t_est >= self.t_parada:       # ya quieto: esta es la llegada creida
                 self.llegadas.append((self.dock, self.x, self.y, self.th))
+                if self.par_n > 25:                 # >= 1 s de muestras quietas
+                    self.sesgo = self.par_sum / self.par_n
                 if self.reset_manual:               # como un reset de pose perfecto con el tag
                     self.x, self.y = self.docks[self.dock]
                     self.th = round(self.th / (math.pi / 2)) * (math.pi / 2)
@@ -168,7 +185,7 @@ def main(args=None):
             self.reportado = 0
             self.fin_dicho = False
             self.get_logger().info(f"ejecutor listo: modo={g('modo')} cd={self.c.cd} ca={self.c.ca} "
-                                   f"freno={self.c.freno}. Quieto 1 s para medir el sesgo del giroscopio...")
+                                   f"freno={self.c.freno}. Quieto 2 s para medir el sesgo del giroscopio...")
 
         def now(self):
             return self.get_clock().now().nanoseconds * 1e-9
